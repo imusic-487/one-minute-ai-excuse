@@ -48,6 +48,16 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     target = out_dir / "entry.txt"
     target.write_text(LINE, encoding="utf-8")
+    # Read the file back: a write that silently lands short or garbled
+    # would hand the judge an invalid entry while this program claimed
+    # success, so fail loudly instead of trusting the write.
+    written = target.read_text(encoding="utf-8")
+    if written != LINE:
+        raise SystemExit(
+            f"entry.txt does not match the line "
+            f"({len(written)} characters read back, "
+            f"{len(LINE)} expected)"
+        )
     sys.stdout.write(f"wrote {len(LINE)} characters to {target}\n")
     return 0
 
